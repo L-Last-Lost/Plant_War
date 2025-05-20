@@ -9,6 +9,7 @@
 首先需要实现<font color="#ff0000">场景基类</font>，定义 `enter`、`input`、`update`、`draw`、`exit` 五种方法，用于描述一个场景的生命周期。然后由 `SceneManager` 统一管理当前处于激活状态的场景，并在主循环中调用当前场景的输入、更新和绘制等逻辑，同时在切换场景时自动调用当前场景的 `exit` 和新场景的 `enter`，从而形成一个完整的**场景状态机**。
 ## 受击闪烁
 实现方式是将角色素材中每一个像素点全部染成白色，这样看起来就是一个全白闪烁的效果。配合定时器使用，**在受击时替换为闪白贴图，定时器结束后则恢复原贴图**，从而实现受击时的视觉提示。
+
 ![image](https://github.com/user-attachments/assets/9cbcbd1c-8ec1-4870-ad0e-eb9cee1baa58)
 
 ## 定时器
@@ -26,6 +27,7 @@ void on_update(int delta) {
 ```
 ## 抛体运动
 向日葵的子弹运动轨迹是斜上抛，所以需要用一个 Vector 类来描述物体在 2D 空间中的位置和速度。速度会随时间更新，比如 y 方向要加上重力加速度 `velocity.y += gravity * delta`，而位置则通过当前速度和时间决定 `position += velocity * delta`。整个运动过程完全依赖传入的 `delta` 来保证在不同帧率下的平滑效果。
+
 ![image](https://github.com/user-attachments/assets/f1c4e2ee-6eea-49a6-b547-5a54c76417fa)
 
 ![image](https://github.com/user-attachments/assets/94703f77-a2fe-4054-ab8b-817168c05a37)
@@ -38,6 +40,7 @@ void on_update(int delta) {
 碰撞检测由玩家类自身实现，包括与平台和子弹的碰撞。**子弹的碰撞主要判断是否与玩家矩形区域重叠**，**平台碰撞则是判断玩家底部是否接触平台顶部**，即 `player_bottom_y >= platform_top_y && player_prev_bottom_y < platform_top_y` 这类逻辑。每一帧只要遍历 `bullet_list` 和 `platform_list` 进行检测即可完成所有碰撞逻辑。
 ## 粒子效果
 玩家在地面上移动时可以在脚底生成粒子，制造出奔跑时的烟尘效果。每个粒子内部会使用定时器进行自销毁逻辑，比如存在 100ms 后自动消失。**同时所有粒子由一个 vector 容器进行管理，绘制时一起绘出**。因为玩家每帧都在移动，所以要频繁生成粒子，同时还要注意优化性能防止生成过多。
+
 ![image](https://github.com/user-attachments/assets/1cdf9904-77c5-448f-8360-0a32a757d73c)
 
 ## 血条
